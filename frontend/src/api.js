@@ -57,10 +57,24 @@ export async function request(path, { method = "GET", body } = {}) {
   throw new ApiError(message, res.status, fieldErrors);
 }
 
+
+
 export const api = {
   signup: (email, password) =>
     request("/auth/signup/", { method: "POST", body: { email, password } }),
   login: (email, password) =>
     request("/auth/login/", { method: "POST", body: { email, password } }),
   logout: () => request("/auth/logout/", { method: "POST" }),
+
+  listTasks: ({ status, search } = {}) => {
+    const params = new URLSearchParams();
+    if (status) params.set("status", status);
+    if (search) params.set("search", search);
+    const qs = params.toString();
+    return request(`/tasks/${qs ? `?${qs}` : ""}`);
+  },
+  getTask: (id) => request(`/tasks/${id}/`),
+  createTask: (data) => request("/tasks/", { method: "POST", body: data }),
+  updateTask: (id, data) => request(`/tasks/${id}/`, { method: "PATCH", body: data }),
+  deleteTask: (id) => request(`/tasks/${id}/`, { method: "DELETE" }),
 };
