@@ -1,4 +1,6 @@
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -7,11 +9,20 @@ body {
   color: #1f2933;
 }
 
-.container { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
-.container.narrow { max-width: 520px; }
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.container.narrow {
+  max-width: 520px;
+}
 
 /* Forms */
-input, select, textarea {
+input,
+select,
+textarea {
   width: 100%;
   padding: 8px 10px;
   border: 1px solid #cbd2d9;
@@ -19,8 +30,20 @@ input, select, textarea {
   font: inherit;
   background: #fff;
 }
-label { display: block; margin-bottom: 12px; font-weight: 600; font-size: 14px; }
-label input, label select, label textarea { margin-top: 4px; font-weight: 400; }
+
+label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+label input,
+label select,
+label textarea {
+  margin-top: 4px;
+  font-weight: 400;
+}
 
 /* Buttons */
 .btn {
@@ -36,9 +59,27 @@ label input, label select, label textarea { margin-top: 4px; font-weight: 400; }
   font-size: 14px;
   white-space: nowrap;
 }
-.btn.primary { background: #2563eb; border-color: #2563eb; color: #fff; }
-.btn.danger { color: #b42318; border-color: #f0b4ae; }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn.primary {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+.btn.primary:hover:not(:disabled) {
+  background: #333;
+  border-color: #333;
+}
+
+.btn.danger {
+  color: #b42318;
+  border-color: #f0b4ae;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* Feedback */
 .error-banner {
@@ -49,5 +90,16 @@ label input, label select, label textarea { margin-top: 4px; font-weight: 400; }
   border-radius: 6px;
   margin-bottom: 12px;
 }
-.field-error { display: block; color: #b42318; font-size: 13px; font-weight: 400; margin-top: 4px; }
-.muted { color: #6b7280; margin: 4px 0; }
+
+.field-error {
+  display: block;
+  color: #b42318;
+  font-size: 13px;
+  font-weight: 400;
+  margin-top: 4px;
+}
+
+.muted {
+  color: #6b7280;
+  margin: 4px 0;
+}
