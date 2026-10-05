@@ -54,6 +54,20 @@ npm install
 npm run dev                     # http://localhost:5173
 ```
 
+## Run with Docker
+
+Run the entire stack with Docker Compose:
+```bash
+docker compose up --build
+```
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000/api
+
+To stop containers and remove volumes:
+```bash
+docker compose down -v
+```
+
 ## Running the tests
 ```bash
 cd backend
