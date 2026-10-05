@@ -37,7 +37,7 @@ class TaskAPITests(APITestCase):
         Task.objects.create(owner=self.alice, title="mine")
         Task.objects.create(owner=self.bob, title="theirs")
         r = self.client.get("/api/tasks/")
-        self.assertEqual([t["title"] for t in r.data], ["mine"])
+        self.assertEqual([t["title"] for t in r.data["results"]], ["mine"])
 
     def test_other_users_task_returns_404(self):
         task = Task.objects.create(owner=self.bob, title="theirs")
@@ -51,13 +51,13 @@ class TaskAPITests(APITestCase):
         Task.objects.create(owner=self.alice, title="a", status="todo")
         Task.objects.create(owner=self.alice, title="b", status="done")
         r = self.client.get("/api/tasks/?status=done")
-        self.assertEqual([t["title"] for t in r.data], ["b"])
+        self.assertEqual([t["title"] for t in r.data["results"]], ["b"])
 
     def test_search_by_title(self):
         Task.objects.create(owner=self.alice, title="Write report")
         Task.objects.create(owner=self.alice, title="Buy milk")
         r = self.client.get("/api/tasks/?search=report")
-        self.assertEqual([t["title"] for t in r.data], ["Write report"])
+        self.assertEqual([t["title"] for t in r.data["results"]], ["Write report"])
 
     def test_update_status_and_delete(self):
         task = Task.objects.create(owner=self.alice, title="x")
@@ -65,3 +65,27 @@ class TaskAPITests(APITestCase):
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.data["status"], "done")
         self.assertEqual(self.client.delete(f"/api/tasks/{task.id}/").status_code, 204)
+
+    def test_pagination_12_tasks(self):
+        for i in range(12):
+            Task.objects.create(owner=self.alice, title=f"Task {i}")
+        r1 = self.client.get("/api/tasks/")
+        self.assertEqual(r1.status_code, 200)
+        self.assertEqual(r1.data["count"], 12)
+        self.assertEqual(len(r1.data["results"]), 10)
+        r2 = self.client.get("/api/tasks/?page=2")
+        self.assertEqual(r2.status_code, 200)
+        self.assertEqual(len(r2.data["results"]), 2)
+
+    def test_user_sees_only_own_tasks_across_pages(self):
+        for i in range(12):
+            Task.objects.create(owner=self.alice, title=f"Alice Task {i}")
+        for i in range(5):
+            Task.objects.create(owner=self.bob, title=f"Bob Task {i}")
+        r1 = self.client.get("/api/tasks/")
+        self.assertEqual(r1.data["count"], 12)
+        self.assertEqual(len(r1.data["results"]), 10)
+        r2 = self.client.get("/api/tasks/?page=2")
+        self.assertEqual(len(r2.data["results"]), 2)
+        all_titles = [t["title"] for t in r1.data["results"]] + [t["title"] for t in r2.data["results"]]
+        self.assertTrue(all(title.startswith("Alice Task") for title in all_titles))

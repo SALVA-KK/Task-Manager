@@ -66,10 +66,11 @@ export const api = {
     request("/auth/login/", { method: "POST", body: { email, password } }),
   logout: () => request("/auth/logout/", { method: "POST" }),
 
-  listTasks: ({ status, search } = {}) => {
+  listTasks: ({ status, search, page } = {}) => {
     const params = new URLSearchParams();
     if (status) params.set("status", status);
     if (search) params.set("search", search);
+    if (page) params.set("page", page);
     const qs = params.toString();
     return request(`/tasks/${qs ? `?${qs}` : ""}`);
   },

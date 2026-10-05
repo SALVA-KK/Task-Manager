@@ -10,6 +10,8 @@ const labelOf = (list, value) => list.find((x) => x.value === value)?.label ?? v
 export default function TaskListPage() {
   const { logout } = useAuth();
   const [tasks, setTasks] = useState([]);
+  const [count, setCount] = useState(0);
+  const [page, setPage] = useState(1);
   const [status, setStatus] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
@@ -19,7 +21,10 @@ export default function TaskListPage() {
 
   // Wait 300ms after typing stops before searching.
   useEffect(() => {
-    const timer = setTimeout(() => setSearch(searchInput.trim()), 300);
+    const timer = setTimeout(() => {
+      setSearch(searchInput.trim());
+      setPage(1);
+    }, 300);
     return () => clearTimeout(timer);
   }, [searchInput]);
 
@@ -27,13 +32,15 @@ export default function TaskListPage() {
     setLoading(true);
     setError("");
     try {
-      setTasks(await api.listTasks({ status, search }));
+      const data = await api.listTasks({ status, search, page });
+      setTasks(data.results);
+      setCount(data.count);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [status, search]);
+  }, [status, search, page]);
 
   useEffect(() => {
     loadTasks();
@@ -58,13 +65,19 @@ export default function TaskListPage() {
     setError("");
     try {
       await api.deleteTask(task.id);
-      setTasks((prev) => prev.filter((t) => t.id !== task.id));
+      if (tasks.length === 1 && page > 1) {
+        setPage((p) => Math.max(1, p - 1));
+      } else {
+        await loadTasks();
+      }
     } catch (err) {
       setError(err.message);
     } finally {
       setBusyId(null);
     }
   };
+
+  const totalPages = Math.max(1, Math.ceil(count / 10));
 
   return (
     <div className="container">
@@ -85,7 +98,10 @@ export default function TaskListPage() {
         />
         <select
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          onChange={(e) => {
+            setStatus(e.target.value);
+            setPage(1);
+          }}
           aria-label="Filter by status"
         >
           <option value="">All statuses</option>
@@ -146,6 +162,28 @@ export default function TaskListPage() {
           </li>
         ))}
       </ul>
+
+      {!loading && !error && count > 0 && (
+        <div className="pagination">
+          <button
+            className="btn"
+            disabled={page <= 1}
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+          >
+            Previous
+          </button>
+          <span>
+            Page {page} of {totalPages}
+          </span>
+          <button
+            className="btn"
+            disabled={page >= totalPages}
+            onClick={() => setPage((p) => p + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }

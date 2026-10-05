@@ -30,3 +30,5 @@
   .task { flex-direction: column; }
   .task-actions { justify-content: flex-start; }
 }
+
+.pagination { display: flex; gap: 12px; align-items: center; justify-content: center; margin-top: 16px; }
