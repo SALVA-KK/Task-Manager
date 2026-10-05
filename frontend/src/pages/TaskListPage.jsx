@@ -120,6 +120,15 @@ export default function TaskListPage() {
       <ul className="task-list">
         {tasks.map((task) => (
           <li key={task.id} className={`task ${task.status === "done" ? "done" : ""}`}>
+            <input
+              type="checkbox"
+              className="task-check"
+              checked={task.status === "done"}
+              disabled={busyId === task.id}
+              onChange={(e) => changeStatus(task, e.target.checked ? "done" : "todo")}
+              aria-label={`Mark "${task.title}" complete`}
+            />
+
             <div className="task-main">
               <strong>{task.title}</strong>
               {task.description && <p className="muted">{task.description}</p>}
@@ -130,6 +139,7 @@ export default function TaskListPage() {
                 <span className="muted">Due: {task.due_date || "—"}</span>
               </div>
             </div>
+
             <div className="task-actions">
               <select
                 value={task.status}
@@ -141,15 +151,6 @@ export default function TaskListPage() {
                   <option key={s.value} value={s.value}>{s.label}</option>
                 ))}
               </select>
-              {task.status !== "done" && (
-                <button
-                  className="btn"
-                  disabled={busyId === task.id}
-                  onClick={() => changeStatus(task, "done")}
-                >
-                  Mark complete
-                </button>
-              )}
               <Link className="btn" to={`/tasks/${task.id}/edit`}>Edit</Link>
               <button
                 className="btn danger"
