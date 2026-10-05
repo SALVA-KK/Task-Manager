@@ -125,6 +125,15 @@ export default function TaskListPage() {
                   <option key={s.value} value={s.value}>{s.label}</option>
                 ))}
               </select>
+              {task.status !== "done" && (
+                <button
+                  className="btn"
+                  disabled={busyId === task.id}
+                  onClick={() => changeStatus(task, "done")}
+                >
+                  Mark complete
+                </button>
+              )}
               <Link className="btn" to={`/tasks/${task.id}/edit`}>Edit</Link>
               <button
                 className="btn danger"
